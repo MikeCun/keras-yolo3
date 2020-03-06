@@ -11,3 +11,6 @@ rm -rf VOCtest_06-Nov-2007.tar
 # Download Yolo Weights
 wget https://personreid.oss-cn-shanghai.aliyuncs.com/yolo_weights.h5
 mv yolo_weights.h5 ./model_data
+
+# Downgrade the version of Keras
+pip install keras==2.2.4
