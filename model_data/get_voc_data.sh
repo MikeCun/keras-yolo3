@@ -7,3 +7,7 @@ tar xf VOCtrainval_06-Nov-2007.tar
 tar xf VOCtest_06-Nov-2007.tar
 rm -rf VOCtrainval_06-Nov-2007.tar
 rm -rf VOCtest_06-Nov-2007.tar
+
+# Download Yolo Weights
+wget https://personreid.oss-cn-shanghai.aliyuncs.com/yolov3.weights
+mv yolov3.weights ./model_data
