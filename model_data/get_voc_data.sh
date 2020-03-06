@@ -9,5 +9,5 @@ rm -rf VOCtrainval_06-Nov-2007.tar
 rm -rf VOCtest_06-Nov-2007.tar
 
 # Download Yolo Weights
-wget https://personreid.oss-cn-shanghai.aliyuncs.com/yolov3.weights
+wget https://personreid.oss-cn-shanghai.aliyuncs.com/yolo_weights.h5
 mv yolov3.weights ./model_data
