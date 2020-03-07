@@ -33,7 +33,6 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
         BatchNormalization(),
         LeakyReLU(alpha=0.1))
 
-
 ############################################################
 #  Deep Attention Block
 ############################################################
@@ -41,19 +40,20 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 def deep_attention_block(input_x, out_dim, ratio=16,):
     """Create a channel-wise deep attention block
     Args:
-        input: input tensor
+        input_x: input tensor
+        out_dim: output dimension
         ratio: number of output filters
     Returns: a keras tensor
     """
-    squeeze = KL.GlobalAveragePooling2D(input_x)
+    squeeze = KL.GlobalAveragePooling2D()(input_x)
 
-    excitation = KL.Dense(squeeze, units=out_dim / ratio)
-    excitation = KL.ReLU(excitation)
-    excitation = KL.Dense(excitation, units=out_dim)
-    excitation = K.sigmoid(excitation)
+    excitation = KL.Dense(out_dim // ratio)(squeeze)
+    excitation = KL.Activation('relu')(excitation)
+    excitation = KL.Dense(units=out_dim)(excitation)
+    excitation = KL.Activation('sigmoid')(excitation)
 
-    excitation = KL.Reshape(excitation, [-1,1,1,out_dim])
-    scale = input_x * excitation
+    excitation = KL.Reshape((1,1,out_dim))(excitation)
+    scale = KL.multiply([input_x, excitation])
     
     return scale
 
