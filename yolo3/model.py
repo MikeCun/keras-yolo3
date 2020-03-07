@@ -120,6 +120,7 @@ def yolo_body(inputs, num_anchors, num_classes):
     x = compose(
         DarknetConv2D_BN_Leaky(128, (1, 1)),
         UpSampling2D(2))(x)
+    # x = Concatenate()([x, darknet.layers[62].output])
     x = Concatenate()([x, darknet.layers[169].output])
     x, y3 = make_last_layers(x, 128, num_anchors * (num_classes + 5))
     return Model(inputs, [y1, y2, y3])
