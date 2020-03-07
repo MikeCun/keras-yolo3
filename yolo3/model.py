@@ -38,33 +38,24 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 #  Deep Attention Block
 ############################################################
 
-def deep_attention_block(input, ratio=16):
+def deep_attention_block(input_x, out_dim, ratio=16,):
     """Create a channel-wise deep attention block
     Args:
         input: input tensor
         ratio: number of output filters
     Returns: a keras tensor
     """
+    squeeze = KL.GlobalAveragePooling2D(input_x)
 
-    init = input
-    channel_axis = 1 if K.image_data_format() == "channels_first" else -1
-    filters = init._keras_shape[channel_axis]
-    se_shape = (1, 1, filters)
-    se = KL.GlobalAveragePooling2D()(init)
-    se = KL.Reshape(se_shape)(se)
-    se = KL.Dropout(0.5)(se)
-    se = KL.Dense(filters // ratio, activation='relu', kernel_initializer='he_normal',
-                  use_bias=False)(se)
-    se = KL.Dropout(0.5)(se)
-    se = KL.Dense(filters, activation='sigmoid', kernel_initializer='he_normal',
-                  use_bias=False)(se)
-    if K.image_data_format() == 'channels_first':
-        se = KL.Permute((3, 1, 2))(se)
+    excitation = KL.Dense(squeeze, units=out_dim / ratio)
+    excitation = KL.ReLU(excitation)
+    excitation = KL.Dense(excitation, units=out_dim)
+    excitation = K.sigmoid(excitation)
 
-    x = KL.multiply([init, se])
-
-    return x
-
+    excitation = KL.Reshape(excitation, [-1,1,1,out_dim])
+    scale = input_x * excitation
+    
+    return scale
 
 def resblock_body(x, num_filters, num_blocks):
     '''A series of resblocks starting with a downsampling Convolution2D'''
@@ -75,7 +66,7 @@ def resblock_body(x, num_filters, num_blocks):
         y = compose(
             DarknetConv2D_BN_Leaky(num_filters // 2, (1, 1)),
             DarknetConv2D_BN_Leaky(num_filters, (3, 3)))(x)
-        x = deep_attention_block(x)
+        x = deep_attention_block(x, out_dim=num_filters)
         x = Add()([x, y])
     return x
 
