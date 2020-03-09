@@ -65,7 +65,7 @@ def resblock_body(x, num_filters, num_blocks):
                     
         y = compose(deep_attention_block(num_filters))(scale)
         x = KL.multiply([scale, y])
-        x = Add()([x, y])
+        x = Add()([x, scale])
     return x
 
 
