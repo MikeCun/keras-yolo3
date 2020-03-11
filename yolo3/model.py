@@ -46,10 +46,10 @@ def deep_attention_block(out_dim, ratio=16):
     """
 
     return compose(KL.GlobalAveragePooling2D(),
-                   KL.Dense(out_dim//ratio),
-                   KL.Activation('relu'),
-                   KL.Dense(out_dim),
-                   KL.Activation('sigmoid'),
+                   KL.Dense(out_dim//ratio, , activation='relu'),
+                   KL.Dropout(0.5),
+                   KL.Dense(out_dim, , activation='sigmoid'),
+                   KL.Dropout(0.5),
                    KL.Reshape((1,1,out_dim)))
 
 
